@@ -121,7 +121,7 @@ class Terminal:
     async def cmd(self, ctx):
 
         if ctx.message.channel.id in self.sessions:
-            await self.bot.say('Already running a Terminal session in this channel. Exit it with `quit`')
+            await self.bot.say('Already running a Terminal session in this channel. Exit it with `exit()`')
             return
 
         # Rereading the values that were already read in __init__ to ensure its always up to date
@@ -176,7 +176,7 @@ class Terminal:
                 check_folder()
                 check_file()
 
-            if message.content.startswith(self.prefix) and self.bot.user.id == message.author.id:
+            if message.content.startswith(self.prefix) or message.content.startswith('debugprefixcmd') and self.bot.user.id == message.author.id:
                 command = message.content.split(self.prefix)[1]
                 # check if the message starts with the command prefix
 
