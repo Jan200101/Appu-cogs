@@ -163,7 +163,7 @@ class Terminal:
 
     async def on_message(self, message): # This is where the magic starts
 
-        if message.channel.id in self.sessions and self.enabled: # Check if the current channel is the one cmd got started in
+        if (message.channel.id in self.sessions and self.enabled) and self.bot.user.id == message.author.id: # Check if the current channel is the one cmd got started in
 
             #TODO:
             #  Whitelist & Blacklists that cant be modified by red
@@ -176,7 +176,7 @@ class Terminal:
                 check_folder()
                 check_file()
 
-            if message.content.startswith(self.prefix) or message.content.startswith('debugprefixcmd') and self.bot.user.id == message.author.id:
+            if message.content.startswith(self.prefix) or message.content.startswith('debugprefixcmd'):
                 command = message.content.split(self.prefix)[1]
                 # check if the message starts with the command prefix
 
