@@ -270,7 +270,7 @@ def check_folder():
 
 def check_file():
     jdict = {
-        "prefix":">",
+        "prefix":"-",
         "cc":{'test' : 'printf "Hello.\nThis is a custom command made using the magic of ~~unicorn poop~~ python.\nLook into /settings/terminal"'},
         "os":{
             'windows':'{path}>',
