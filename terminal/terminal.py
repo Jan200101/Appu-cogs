@@ -162,7 +162,10 @@ class Terminal:
         await self.bot.say('Changed prefix to {} '.format(self.prefix.replace("`", "\\`")))
 
     async def on_message(self, message): # This is where the magic starts
-
+        
+        if self.bot.user.id != message.author.id:
+            return
+                
         if message.channel.id in self.sessions and self.enabled: # Check if the current channel is the one cmd got started in
 
             #TODO:
@@ -176,7 +179,7 @@ class Terminal:
                 check_folder()
                 check_file()
 
-            if message.content.startswith(self.prefix) or message.content.startswith('debugprefixcmd') and self.bot.user.id == message.author.id:
+            if message.content.startswith(self.prefix) or message.content.startswith('debugprefixcmd'):
                 command = message.content.split(self.prefix)[1]
                 # check if the message starts with the command prefix
 
@@ -267,7 +270,7 @@ def check_folder():
 
 def check_file():
     jdict = {
-        "prefix":">",
+        "prefix":"-",
         "cc":{'test' : 'printf "Hello.\nThis is a custom command made using the magic of ~~unicorn poop~~ python.\nLook into /settings/terminal"'},
         "os":{
             'windows':'{path}>',
@@ -279,7 +282,6 @@ def check_file():
     if not dataIO.is_valid_json("settings/terminal/settings.json"):
         print("[Terminal]Creating default settings.json...")
         dataIO.save_json("settings/terminal/settings.json", jdict)
-
 
 def setup(bot):
     check_folder()
