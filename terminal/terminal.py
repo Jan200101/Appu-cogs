@@ -15,9 +15,12 @@ class DataIO():
         rnd = randint(1000, 9999)
         path, ext = splitext(filename)
         tmp_file = "{}-{}.tmp".format(path, rnd)
-        self._save_json(tmp_file, data)
+        with open(tmp_file, encoding='utf-8', mode="w") as f:
+            json.dump(data, f, indent=4,sort_keys=True,
+                separators=(',',' : '))
         try:
-            self._read_json(tmp_file)
+            with open(tmp_file, encoding='utf-8', mode="r") as f:
+                data = json.load(f)
         except json.decoder.JSONDecodeError:
             self.logger.exception("Attempted to write file {} but JSON "
                                   "integrity check on tmp file has failed. "
@@ -29,73 +32,27 @@ class DataIO():
 
     def load_json(self, filename):
         """Loads json file"""
-        return self._read_json(filename)
+        with open(filename, encoding='utf-8', mode="r") as f:
+            data = json.load(f)
+        return data
 
     def is_valid_json(self, filename):
         """Verifies if json file exists / is readable"""
         try:
-            self._read_json(filename)
+            with open(filename, encoding='utf-8', mode="r") as f:
+                data = json.load(f)
             return True
         except FileNotFoundError:
             return False
         except json.decoder.JSONDecodeError:
             return False
 
-    def _read_json(self, filename):
-        with open(filename, encoding='utf-8', mode="r") as f:
-            data = json.load(f)
-        return data
-
-    def _save_json(self, filename, data):
-        with open(filename, encoding='utf-8', mode="w") as f:
-            json.dump(data, f, indent=4,sort_keys=True,
-                separators=(',',' : '))
-        return data
-
 dataIO = DataIO()
 
-def escape_mass_mentions(text):
-    return escape(text, mass_mentions=True)
-
-def escape(text, *, mass_mentions=False, formatting=False):
-    if mass_mentions:
-        text = text.replace("@everyone", "@\u200beveryone")
-        text = text.replace("@here", "@\u200bhere")
-    if formatting:
-        text = (text.replace("`", "\\`")
-                    .replace("*", "\\*")
-                    .replace("_", "\\_")
-                    .replace("~", "\\~"))
-    return text
-	
 def box(text, lang=""):
     ret = "```{}\n{}\n```".format(lang, text)
     return ret
-    
-def pagify(text, delims=["\n"], *, escape=True, shorten_by=8,
-           page_length=2000):
-    """DOES NOT RESPECT MARKDOWN BOXES OR INLINE CODE"""
-    in_text = text
-    if escape:
-        num_mentions = text.count("@here") + text.count("@everyone")
-        shorten_by += num_mentions
-    page_length -= shorten_by
-    while len(in_text) > page_length:
-        closest_delim = max([in_text.rfind(d, 0, page_length)
-                             for d in delims])
-        closest_delim = closest_delim if closest_delim != -1 else page_length
-        if escape:
-            to_send = escape_mass_mentions(in_text[:closest_delim])
-        else:
-            to_send = in_text[:closest_delim]
-        yield to_send
-        in_text = in_text[closest_delim:]
 
-    if escape:
-        yield escape_mass_mentions(in_text)
-    else:
-        yield in_text
-    
 class Terminal:
     """Repl like Terminal in discord"""
 
@@ -150,22 +107,22 @@ class Terminal:
     @cmdsettings.command(name="prefix", pass_context=True)
     async def _prefix(self, ctx, prefix:str=None):
         """Set the prefix for the Terminal"""
-        
+
         if prefix == None:
             await self.send_cmd_help(ctx)
             await self.bot.say(box('Current prefix: ' + self.prefix))
             return
-            
+
         self.prefix = prefix
         self.settings['prefix'] = self.prefix
         dataIO.save_json('settings/terminal/settings.json', self.settings)
         await self.bot.say('Changed prefix to {} '.format(self.prefix.replace("`", "\\`")))
 
     async def on_message(self, message): # This is where the magic starts
-        
+
         if self.bot.user.id != message.author.id:
             return
-                
+
         if message.channel.id in self.sessions and self.enabled: # Check if the current channel is the one cmd got started in
 
             #TODO:
@@ -238,7 +195,24 @@ class Terminal:
                     system = uname()[1]
                     user = self.os['linux'].format(user=username, system=system, path=path)
 
-                result = list(pagify(user + shell, shorten_by=12))
+                result = []
+                in_text = text = user + shell
+                shorten_by = 12
+                page_length=2000
+                num_mentions = text.count("@here") + text.count("@everyone")
+                shorten_by += num_mentions
+                page_length -= shorten_by
+                while len(in_text) > page_length:
+                    closest_delim = max([in_text.rfind(d, 0, page_length)
+                                         for d in ["\n"]])
+                    closest_delim = closest_delim if closest_delim != -1 else page_length
+                    to_send = in_text[:closest_delim].replace("@everyone", "@\u200beveryone").replace("@here", "@\u200bhere")
+                    result.append(to_send)
+                    in_text = in_text[closest_delim:]
+
+                result.append(in_text.replace("@everyone", "@\u200beveryone").replace("@here", "@\u200bhere"))
+
+                #result = list(pagify(user + shell, shorten_by=12))
 
                 for x, output in enumerate(result):
                     if x % 2 == 0 and x != 0:
@@ -266,7 +240,6 @@ def check_folder():
     if not exists("settings/terminal"):
         print("[Terminal]Creating settings/terminal folder...")
         makedirs("settings/terminal")
-
 
 def check_file():
     jdict = {
