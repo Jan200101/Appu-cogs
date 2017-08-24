@@ -68,17 +68,17 @@ class Terminal:
         if ctx.invoked_subcommand:
             pages = self.bot.formatter.format_help_for(ctx, ctx.invoked_subcommand)
             for page in pages:
-                await self.bot.send_message(ctx.message.channel, page)
+                await ctx.send(page)
         else:
             pages = self.bot.formatter.format_help_for(ctx, ctx.command)
             for page in pages:
-                await self.bot.send_message(ctx.message.channel, page)
+                await ctx.send(page)
 
     @commands.command(pass_context=True)
     async def cmd(self, ctx):
 
         if ctx.message.channel.id in self.sessions:
-            await self.bot.say('Already running a Terminal session in this channel. Exit it with `exit()`')
+            await ctx.send('Already running a Terminal session in this channel. Exit it with `exit()`')
             return
 
         # Rereading the values that were already read in __init__ to ensure its always up to date
@@ -95,7 +95,7 @@ class Terminal:
         self.os = self.settings['os']
 
         self.sessions.append(ctx.message.channel.id)
-        await self.bot.say('Enter commands after {} to execute them. `exit()` to exit.'.format(self.prefix.replace("`", "\\`")))
+        await ctx.send('Enter commands after {} to execute them. `exit()` to exit.'.format(self.prefix.replace("`", "\\`")))
 
 
     @commands.group(pass_context=True)
@@ -110,13 +110,13 @@ class Terminal:
 
         if prefix == None:
             await self.send_cmd_help(ctx)
-            await self.bot.say(box('Current prefix: ' + self.prefix))
+            await ctx.send(box('Current prefix: ' + self.prefix))
             return
 
         self.prefix = prefix
         self.settings['prefix'] = self.prefix
         dataIO.save_json('settings/terminal/settings.json', self.settings)
-        await self.bot.say('Changed prefix to {} '.format(self.prefix.replace("`", "\\`")))
+        await ctx.send('Changed prefix to {} '.format(self.prefix.replace("`", "\\`")))
 
     async def on_message(self, message): # This is where the magic starts
 
@@ -145,7 +145,7 @@ class Terminal:
 
 
                 if command == 'exit()':  # commands used for quiting cmd, same as for repl
-                    await self.bot.send_message(message.channel, 'Exiting.')
+                    await message.channel.send('Exiting.')
                     self.sessions.remove(message.channel.id)
                     return
 
@@ -220,20 +220,20 @@ class Terminal:
                         #  Change it up to a reaction based system like repl
                         #  change up certain things. For example making a print template in the settings print character number not page number
 
-                        note = await self.bot.send_message(message.channel, 'There are still {} pages left.\nType `more` to continue.'.format(len(result) - (x+1)))
+                        note = await message.channel.send('There are still {} pages left.\nType `more` to continue.'.format(len(result) - (x+1)))
                         msg = await self.bot.wait_for_message(author=message.author,
                                                       channel=message.channel,
                                                       check=check,
                                                       timeout=12)
                         if msg == None:
                             try:
-                                await self.bot.delete_message(note)
+                                await note.delete()
                             except:
                                 pass
                             finally:
                                 break
 
-                    await self.bot.send_message(message.channel, box(output, 'Bash'))
+                    await message.channel.send(box(output, 'Bash'))
 
 
 def check_folder():
