@@ -222,11 +222,12 @@ class Terminal:
                                                                 ''.format(len(result) - (x+1)))
 
                         msg = await self.bot.wait_for('message',
-                                                      author=self.bot,
-                                                      channel=message.channel,
-                                                      check=check,
-                                                      timeout=10)
-                        if msg != 'more':
+                                                      check=lambda m: m.channel == message.channel and 
+                                                      m.author == message.author and 
+                                                      m.content == 'more',
+                                                      timeout=120)
+                        
+                        if msg.content != 'more':
                             try:
                                 await note.delete()
                             except:
