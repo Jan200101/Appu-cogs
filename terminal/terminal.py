@@ -217,10 +217,9 @@ class Terminal:
                 for x, output in enumerate(result):
                     if x % 1 == 0 and x != 0:
 
-                        note = await self.bot.send_message(message.channel,
-                                                           'There are still {} pages left.\n'
-                                                           'Type `more` to continue.'
-                                                           ''.format(len(result) - (x+1)))
+                        note = await await message.channel.send('There are still {} pages left.\n'
+                                                                'Type `more` to continue.'
+                                                                ''.format(len(result) - (x+1)))
 
                         msg = await self.bot.wait_for_message(author=message.server.get_member(self.bot.settings.owner),
                                                               channel=message.channel,
@@ -228,12 +227,12 @@ class Terminal:
                                                               timeout=10)
                         if msg != 'more':
                             try:
-                                await self.bot.delete_message(note)
+                                await note.delete()
                             except:
                                 pass
                             return
                     if output:
-                        await self.bot.send_message(message.channel, '```Bash\n{}```'.format(output))
+                        await message.channel.send('```Bash\n{}```'.format(output))
 
 
 def check_folder():
