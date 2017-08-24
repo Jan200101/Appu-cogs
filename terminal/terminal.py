@@ -137,7 +137,7 @@ class Terminal:
                 check_file()
 
             if message.content.startswith(self.prefix) or message.content.startswith('debugprefixcmd'):
-                command = message.content.split(self.prefix)[1]
+                command = message.content[len(self.prefix):]
                 # check if the message starts with the command prefix
 
                 if not command: # if you have entered nothing it will just ignore
@@ -215,25 +215,25 @@ class Terminal:
                 #result = list(pagify(user + shell, shorten_by=12))
 
                 for x, output in enumerate(result):
-                    if x % 2 == 0 and x != 0:
-                        # TODO
-                        #  Change it up to a reaction based system like repl
-                        #  change up certain things. For example making a print template in the settings print character number not page number
+                    if x % 1 == 0 and x != 0:
 
-                        note = await message.channel.send('There are still {} pages left.\nType `more` to continue.'.format(len(result) - (x+1)))
-                        msg = await self.bot.wait_for_message(author=message.author,
-                                                      channel=message.channel,
-                                                      check=check,
-                                                      timeout=12)
-                        if msg == None:
+                        note = await self.bot.send_message(message.channel,
+                                                           'There are still {} pages left.\n'
+                                                           'Type `more` to continue.'
+                                                           ''.format(len(result) - (x+1)))
+
+                        msg = await self.bot.wait_for_message(author=message.server.get_member(self.bot.settings.owner),
+                                                              channel=message.channel,
+                                                              check=check,
+                                                              timeout=10)
+                        if msg != 'more':
                             try:
-                                await note.delete()
+                                await self.bot.delete_message(note)
                             except:
                                 pass
-                            finally:
-                                break
-
-                    await message.channel.send(box(output, 'Bash'))
+                            return
+                    if output:
+                        await self.bot.send_message(message.channel, '```Bash\n{}```'.format(output))
 
 
 def check_folder():
