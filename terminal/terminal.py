@@ -217,14 +217,15 @@ class Terminal:
                 for x, output in enumerate(result):
                     if x % 1 == 0 and x != 0:
 
-                        note = await await message.channel.send('There are still {} pages left.\n'
+                        note = await message.channel.send('There are still {} pages left.\n'
                                                                 'Type `more` to continue.'
                                                                 ''.format(len(result) - (x+1)))
 
-                        msg = await self.bot.wait_for_message(author=message.server.get_member(self.bot.settings.owner),
-                                                              channel=message.channel,
-                                                              check=check,
-                                                              timeout=10)
+                        msg = await self.bot.wait_for('message',
+                                                      author=self.bot,
+                                                      channel=message.channel,
+                                                      check=check,
+                                                      timeout=10)
                         if msg != 'more':
                             try:
                                 await note.delete()
