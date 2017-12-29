@@ -73,7 +73,7 @@ class DataIO():
 
 dataIO = DataIO()
 
-class BetterTerminal:
+class Terminal:
     """Repl like Terminal in discord"""
 
     def __init__(self, bot):
@@ -238,8 +238,7 @@ class BetterTerminal:
 
     async def on_message(self, message): # This is where the magic starts
 
-        if (message.channel.id in self.sessions and self.enabled and
-                message.author.id == self.bot.owner_id): # DO NOT DELETE
+        if (message.channel.id in self.sessions and self.enabled): # DO NOT DELETE
 
             #TODO:
             #  Whitelist & Blacklists that cant be modified by the bot
@@ -409,4 +408,4 @@ def check_file():
 def setup(bot):
     check_folder()
     check_file()
-    bot.add_cog(BetterTerminal(bot))
+    bot.add_cog(Terminal(bot))
