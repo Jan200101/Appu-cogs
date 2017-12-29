@@ -79,7 +79,7 @@ class BetterTerminal:
     def __init__(self, bot):
         self.bot = bot
         self.settings = dataIO.load_json(abspath(dirname(argv[0])) +
-                                         '/data/betterterminal/settings.json')
+                                         '/settings/terminal/settings.json')
         self.prefix = self.settings['prefix']
         self.alias = self.settings['alias']
         self.os = self.settings['os']
@@ -153,13 +153,13 @@ class BetterTerminal:
         # Rereading the values that were already read in __init__ to ensure its always up to date
         try:
             self.settings = dataIO.load_json(abspath(dirname(argv[0])) +
-                                             '/data/betterterminal/settings.json')
+                                             '/settings/terminal/settings.json')
         except Exception:
             # Pretend its the worst case and reset the settings
             check_folder()
             check_file()
             self.settings = dataIO.load_json(abspath(dirname(argv[0])) +
-                                             '/data/betterterminal/settings.json')
+                                             '/settings/terminal/settings.json')
 
         self.prefix = self.settings['prefix']
         self.alias = self.settings['alias']
@@ -215,7 +215,7 @@ class BetterTerminal:
         self.cos = os
         self.settings['cos'] = os
         dataIO.save_json(abspath(dirname(argv[0])) +
-                         '/data/betterterminal/settings.json', self.settings)
+                         '/settings/terminal/settings.json', self.settings)
         await ctx.send('Changed prompt type to {} '.format(self.cos.replace("`", "\\`")))
 
     @cmdsettings.command(name="prefix", pass_context=True)
@@ -232,23 +232,24 @@ class BetterTerminal:
         self.prefix = prefix
         self.settings['prefix'] = prefix
         dataIO.save_json(abspath(dirname(argv[0])) +
-                         '/data/betterterminal/settings.json', self.settings)
+                         '/settings/terminal/settings.json', self.settings)
 
         await ctx.send('Changed prefix to {} '.format(self.prefix.replace("`", "\\`")))
 
     async def on_message(self, message): # This is where the magic starts
 
-        if (message.channel.id in self.sessions and self.enabled): # DO NOT DELETE
+        if (message.channel.id in self.sessions and self.enabled and
+                message.author.id == self.bot.owner_id): # DO NOT DELETE
 
             #TODO:
             #  Whitelist & Blacklists that cant be modified by the bot
 
             if not dataIO.is_valid_json(abspath(dirname(argv[0])) +
-                                        '/data/betterterminal/settings.json'):
+                                        '/settings/terminal/settings.json'):
                 check_folder()
                 check_file()
                 self.settings = dataIO.load_json(abspath(dirname(argv[0])) +
-                                                 '/data/betterterminal/settings.json')
+                                                 '/settings/terminal/settings.json')
                 self.prefix = self.settings['prefix']
                 self.alias = self.settings['alias']
                 self.os = self.settings['os']
