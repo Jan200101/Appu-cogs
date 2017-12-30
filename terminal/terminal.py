@@ -402,7 +402,7 @@ def check_file():
         "enabled":True
         }
 
-    if not dataIO.is_valid_json(abspath(dirname(argv[0])) + '/settings/terminal/settings.json') or not 'cos' in dataIO.load_json(abspath(dirname(argv[0])) + '/settings/terminal/settings.json'):
+    if not dataIO.is_valid_json(abspath(dirname(argv[0])) + '/settings/terminal/settings.json') or 'cc' in dataIO.load_json(abspath(dirname(argv[0])) + '/settings/terminal/settings.json'):
         print("[Terminal]Creating default settings.json...")
         dataIO.save_json(abspath(dirname(argv[0])) + '/settings/terminal/settings.json', jdict)
 
