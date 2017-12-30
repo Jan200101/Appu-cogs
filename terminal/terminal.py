@@ -239,7 +239,7 @@ class Terminal:
 
     async def on_message(self, message): # This is where the magic starts
 
-        if (message.channel.id in self.sessions and self.enabled): # DO NOT DELETE
+        if (message.channel.id in self.sessions and self.enabled and message.author.id == message.server.me.id): # DO NOT DELETE
 
             #TODO:
             #  Whitelist & Blacklists that cant be modified by the bot
@@ -402,7 +402,7 @@ def check_file():
         "enabled":True
         }
 
-    if not dataIO.is_valid_json(abspath(dirname(argv[0])) + '/settings/terminal/settings.json') or 'cc' in dataIO.load_json(abspath(dirname(argv[0])) + '/settings/terminal/settings.json'):
+    if not dataIO.is_valid_json(abspath(dirname(argv[0])) + '/settings/terminal/settings.json') or  'cc' in dataIO.load_json(abspath(dirname(argv[0])) + '/settings/terminal/settings.json'):
         print("[Terminal]Creating default settings.json...")
         dataIO.save_json(abspath(dirname(argv[0])) + '/settings/terminal/settings.json', jdict)
 
