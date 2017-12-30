@@ -82,11 +82,7 @@ class Terminal:
                                          '/settings/terminal/settings.json')
         self.prefix = self.settings['prefix']
 
-        self.alias = {}
-        if 'cc' in self.settings:
-            self.alias.update(self.settings['cc'])
-        if 'alias' in self.settings:
-            self.alias.update(self.settings['alias'])
+        self.alias = self.settings['alias']
         self.os = self.settings['os']
         self.cos = self.settings['cos']
         self.enabled = self.settings['enabled']
@@ -167,10 +163,7 @@ class Terminal:
                                              '/settings/terminal/settings.json')
 
         self.prefix = self.settings['prefix']
-        if 'cc' in self.settings:
-            self.alias.update(self.settings['cc'])
-        if 'alias' in self.settings:
-            self.alias.update(self.settings['alias'])
+        self.alias = self.settings['alias']
         self.os = self.settings['os']
 
         self.sessions.update({ctx.message.channel.id:getcwd()})
@@ -258,10 +251,7 @@ class Terminal:
                 self.settings = dataIO.load_json(abspath(dirname(argv[0])) +
                                                  '/settings/terminal/settings.json')
                 self.prefix = self.settings['prefix']
-                if 'cc' in self.settings:
-                    self.alias.update(self.settings['cc'])
-                if 'alias' in self.settings:
-                    self.alias.update(self.settings['alias'])
+                self.alias = self.settings['alias']
                 self.os = self.settings['os']
                 self.cos = self.settings['cos']
                 self.enabled = self.settings['enabled']
@@ -412,7 +402,7 @@ def check_file():
         "enabled":True
         }
 
-    if not dataIO.is_valid_json(abspath(dirname(argv[0])) + '/settings/terminal/settings.json'):
+    if not dataIO.is_valid_json(abspath(dirname(argv[0])) + '/settings/terminal/settings.json') or not 'cos' in dataIO.load_json(abspath(dirname(argv[0])) + '/settings/terminal/settings.json'):
         print("[Terminal]Creating default settings.json...")
         dataIO.save_json(abspath(dirname(argv[0])) + '/settings/terminal/settings.json', jdict)
 
