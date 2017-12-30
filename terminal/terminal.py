@@ -81,7 +81,12 @@ class Terminal:
         self.settings = dataIO.load_json(abspath(dirname(argv[0])) +
                                          '/settings/terminal/settings.json')
         self.prefix = self.settings['prefix']
-        self.alias = self.settings['alias']
+
+        self.alias = {}
+        if 'cc' in self.settings:
+            self.alias.update(self.settings['cc'])
+        if 'alias' in self.settings:
+            self.alias.update(self.settings['alias'])
         self.os = self.settings['os']
         self.cos = self.settings['cos']
         self.enabled = self.settings['enabled']
@@ -162,7 +167,10 @@ class Terminal:
                                              '/settings/terminal/settings.json')
 
         self.prefix = self.settings['prefix']
-        self.alias = self.settings['alias']
+        if 'cc' in self.settings:
+            self.alias.update(self.settings['cc'])
+        if 'alias' in self.settings:
+            self.alias.update(self.settings['alias'])
         self.os = self.settings['os']
 
         self.sessions.update({ctx.message.channel.id:getcwd()})
@@ -250,7 +258,10 @@ class Terminal:
                 self.settings = dataIO.load_json(abspath(dirname(argv[0])) +
                                                  '/settings/terminal/settings.json')
                 self.prefix = self.settings['prefix']
-                self.alias = self.settings['alias']
+                if 'cc' in self.settings:
+                    self.alias.update(self.settings['cc'])
+                if 'alias' in self.settings:
+                    self.alias.update(self.settings['alias'])
                 self.os = self.settings['os']
                 self.cos = self.settings['cos']
                 self.enabled = self.settings['enabled']
