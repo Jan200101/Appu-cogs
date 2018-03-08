@@ -108,8 +108,8 @@ class Terminal:
                    'Architecture:       {}\n\n'
                    'Python Version:     {}\n'
                    'Commit              {}\n'
-                   '```'.format(ctx.message.guild.me.name,
-                                ctx.message.guild.me.display_name,
+                   '```'.format(ctx.author.name,
+                                ctx.author.display_name,
                                 abspath(dirname(argv[0])), uname()[0],
                                 uname()[3], uname()[4], python_version(),
                                 commithash))
@@ -239,7 +239,7 @@ class Terminal:
 
     async def on_message(self, message): # This is where the magic starts
 
-        if (message.channel.id in self.sessions and self.enabled and message.author.id == message.guild.me.id): # DO NOT DELETE
+        if (message.channel.id in self.sessions and self.enabled and message.author.id == bot.user.id): # DO NOT DELETE
 
             #TODO:
             #  Whitelist & Blacklists that cant be modified by the bot
