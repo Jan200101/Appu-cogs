@@ -19,8 +19,6 @@ from discord.ext import commands
 __author__ = 'Sentry#4141'
 
 class DataIO():
-    def __init__(self, bot):
-        self.bot = bot
 
     def save_json(self, filename, data):
         """Atomically save a JSON file given a filename and a dictionary."""
