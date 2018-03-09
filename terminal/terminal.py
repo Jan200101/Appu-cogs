@@ -19,6 +19,8 @@ from discord.ext import commands
 __author__ = 'Sentry#4141'
 
 class DataIO():
+    def __init__(self, bot):
+        self.bot = bot
 
     def save_json(self, filename, data):
         """Atomically save a JSON file given a filename and a dictionary."""
@@ -239,7 +241,7 @@ class Terminal:
 
     async def on_message(self, message): # This is where the magic starts
 
-        if (message.channel.id in self.sessions and self.enabled and message.author.id == bot.user.id): # DO NOT DELETE
+        if (message.channel.id in self.sessions and self.enabled and message.author.id == self.bot.user.id): # DO NOT DELETE
 
             #TODO:
             #  Whitelist & Blacklists that cant be modified by the bot
